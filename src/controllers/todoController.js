@@ -7,7 +7,7 @@ class TodoController {
   // Get all todos with subtasks
   static async getAllTodos(req, res, next) {
     try {
-      const todos = await prisma.todo.findMany({
+      const todos = await prisma.todos.findMany({
         include: {
           subtasks: {
             orderBy: {
@@ -40,7 +40,7 @@ class TodoController {
         });
       }
 
-      const todos = await prisma.todo.findMany({
+      const todos = await prisma.todos.findMany({
         where: {
           date: new Date(date),
         },
@@ -69,7 +69,7 @@ class TodoController {
     try {
       const { id } = req.params;
 
-      const todo = await prisma.todo.findUnique({
+      const todo = await prisma.todos.findUnique({
         where: { id: parseInt(id) },
         include: {
           subtasks: {
@@ -109,7 +109,7 @@ class TodoController {
 
       const { title, date, position = 0 } = req.body;
 
-      const todo = await prisma.todo.create({
+      const todo = await prisma.todos.create({
         data: {
           title,
           date: new Date(date),
@@ -150,7 +150,7 @@ class TodoController {
       if (req.body.completed !== undefined) updateData.completed = req.body.completed;
       if (req.body.position !== undefined) updateData.position = req.body.position;
 
-      const todo = await prisma.todo.update({
+      const todo = await prisma.todos.update({
         where: { id: parseInt(id) },
         data: updateData,
         include: {
@@ -177,7 +177,7 @@ class TodoController {
     try {
       const { id } = req.params;
 
-      const currentTodo = await prisma.todo.findUnique({
+      const currentTodo = await prisma.todos.findUnique({
         where: { id: parseInt(id) },
       });
 
@@ -188,7 +188,7 @@ class TodoController {
         });
       }
 
-      const todo = await prisma.todo.update({
+      const todo = await prisma.todos.update({
         where: { id: parseInt(id) },
         data: {
           completed: !currentTodo.completed,
@@ -213,7 +213,7 @@ class TodoController {
     try {
       const { id } = req.params;
 
-      const todo = await prisma.todo.delete({
+      const todo = await prisma.todos.delete({
         where: { id: parseInt(id) },
       });
 
@@ -244,7 +244,7 @@ class TodoController {
       // Use transaction to update all positions based on provided (id, position) pairs
       await prisma.$transaction(
         positions.map((item) =>
-          prisma.todo.update({
+          prisma.todos.update({
             where: { id: parseInt(item.id) },
             data: { position: item.position },
           })
